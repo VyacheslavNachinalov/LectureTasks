@@ -1,0 +1,20 @@
+#include <iostream>
+
+using namespace std;
+
+unsigned int variantChoice(unsigned int a, unsigned int b)
+{
+	return (a % b + 1);
+}
+
+int main()
+{
+	setlocale(LC_ALL, "RUS");
+	cout << "Введите свой номер по списку" << endl;
+	int a, b;
+	cin >> a;
+	cout << "Введите общее количество вариантов" << endl;
+	cin >> b;
+	cout << "Ваш вариант: " << variantChoice(a,b);
+	return 0;
+}
