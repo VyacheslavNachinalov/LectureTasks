@@ -1,0 +1,30 @@
+#include <iostream>
+
+using namespace std;
+
+unsigned int variantChoice(unsigned char c, unsigned int a)
+{
+	return ((c-0) % a + 1);
+}
+
+int main()
+{
+	setlocale(LC_ALL, "RUS");
+	unsigned char c;
+	bool correctInput = false;
+	while (!correctInput)
+	{
+		cout << "Введите первую букву своего имени на кирилице заглавной буквой" << endl;
+		cin >> c;
+		if ((c - 0 < 128) or (c - 0 > 158))
+		{
+			cout << "Неверный ввод, введите снова" << endl;
+		}
+		else (correctInput = true);
+	}
+	cout << "Введите количество вариантов"<<endl;
+	unsigned int a;
+	cin >> a;
+	cout << "Ваш вариант: " << variantChoice(c, a);
+	return 0;
+}
