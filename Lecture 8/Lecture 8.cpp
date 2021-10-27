@@ -43,7 +43,7 @@ double collision(double highest,vector<Location>& vect,double timeOfCollision) /
 	double tx = vect.back().x;
 	Location inputer({t,ty,tx});
 	vect.push_back(inputer);
-	double vy = sqrt(2 * (-gravity) * highest) * sqrt((100 - lossPercent) / 100);
+	double vy = sqrt((100 - lossPercent) / 100 * (vx * vx + prev_vy * prev_vy) - vx * vx);
 	return vy;
 }
 
