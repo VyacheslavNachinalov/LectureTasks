@@ -22,10 +22,10 @@ using namespace std;
 const double gravity = -9.80665;
 const double deltaTime = 0.01;
 const int c_delay = 40;
-const int p_delay = 60;
+const int p_delay = 50;
 const double lossPercent = 90;
 
-struct Location 
+struct Location
 {
 	double time;
 	double y;
@@ -36,22 +36,22 @@ struct Location
 vector <Location> locations(0);
 mutex locker;
 
-double collision(double highest,vector<Location>& vect,double timeOfCollision) //обработка столкновения, возвращающая значение проекции скорости на ось OY после столкновения
+double collision(double highest, vector<Location>& vect, double timeOfCollision, double vx, double prev_vy) //обработка столкновения, возвращающая значение проекции скорости на ось OY после столкновения
 {
 	double t = timeOfCollision;
 	double ty = 0;
 	double tx = vect.back().x;
-	Location inputer({t,ty,tx});
+	Location inputer({ t,ty,tx });
 	vect.push_back(inputer);
 	double vy = sqrt((100 - lossPercent) / 100 * (vx * vx + prev_vy * prev_vy) - vx * vx);
-	return vy;
+	return vy; //расчет новой вертикальной составляющей скорости с учетом потери энергии
 }
 
 
 void print_vec()
 {
 	Location pr;
-	
+
 	do
 	{
 		this_thread::sleep_for(chrono::milliseconds(c_delay));
@@ -63,12 +63,12 @@ void print_vec()
 		cout << "xPos = " << pr.x << "; ";
 		cout << "yPos = " << pr.y << endl;
 	} while (pr.y > 0.001);
-	
+
 }
 
 void emulation(const double mass, double tvx, double tvy, double x, double y)
 {
-	Location st({0,0,0});
+	Location st({ 0,0,0 });
 	locations.push_back(st);
 	locations.back().time = 0;
 	locations.back().x = x;
@@ -76,6 +76,7 @@ void emulation(const double mass, double tvx, double tvy, double x, double y)
 	double vx = tvx;
 	double vy = tvy;
 	double timeOfCollision = sqrt(2.0 * y / (-gravity));
+	cout << timeOfCollision << endl;
 	double highest = y;
 	while (highest > 0.001)
 	{
@@ -88,12 +89,13 @@ void emulation(const double mass, double tvx, double tvy, double x, double y)
 			double nextx = locations.back().x + vx * deltaTime;
 
 			locker.lock();
-			locations.push_back({t, h, nextx});
+			locations.push_back({ t, h, nextx });
 			locker.unlock();
 			this_thread::sleep_for(chrono::milliseconds(p_delay));
 		}
 		cout << endl << endl;
-		vy = collision(highest, locations, timeOfCollision);
+		double prev_vy = vy;
+		vy = collision(highest, locations, timeOfCollision, vx, prev_vy);
 		double tmax = vy / (-gravity); //время подъема после отскока
 		highest = vy * tmax + gravity * tmax * tmax / 2; //наибольшая высота подъема после отскока
 		cout << "NEXT HIGHEST POS = " << highest << endl;
@@ -103,7 +105,7 @@ void emulation(const double mass, double tvx, double tvy, double x, double y)
 
 
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
 	double mas, vx, vy, x, y;
 	cout << argc << endl;
@@ -148,9 +150,10 @@ int main(int argc, char* argv[])
 			return -1;
 		}
 	}
-	thread thread_emul(emulation,mas,vx,vy,x,y);
+	thread thread_emul(emulation, mas, vx, vy, x, y);
 	thread thread_print(print_vec);
 
 	thread_emul.join();
 	thread_print.join();
+
 }
