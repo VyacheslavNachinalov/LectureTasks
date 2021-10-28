@@ -21,8 +21,8 @@ using namespace std;
 
 const double gravity = -9.80665;
 const double deltaTime = 0.01;
-const int c_delay = 40;
-const int p_delay = 50;
+const int c_delay = 20;
+const int p_delay = 40;
 const double lossPercent = 90;
 
 struct Location
