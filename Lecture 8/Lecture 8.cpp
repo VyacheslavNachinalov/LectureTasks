@@ -50,20 +50,25 @@ double collision(double highest, vector<Location>& vect, double timeOfCollision,
 
 void print_vec()
 {
-	Location pr;
-
+	Location pr({0,0,0});
+	Location prev_pr;
 	do
 	{
 		this_thread::sleep_for(chrono::milliseconds(c_delay));
 		locker.lock();
+		prev_pr.time = pr.time;
+		prev_pr.x = pr.x;
+		prev_pr.y = pr.y;
 		pr = locations.back();
 		locker.unlock();
-		cout << fixed << setprecision(6);
-		cout << "Time = " << pr.time << "; ";
-		cout << "xPos = " << pr.x << "; ";
-		cout << "yPos = " << pr.y << endl;
+		if (prev_pr.time != pr.time)
+		{
+			cout << fixed << setprecision(6);
+			cout << "Time = " << pr.time << "; ";
+			cout << "xPos = " << pr.x << "; ";
+			cout << "yPos = " << pr.y << endl;
+		}
 	} while (pr.y > 0.001);
-
 }
 
 void emulation(const double mass, double tvx, double tvy, double x, double y)
